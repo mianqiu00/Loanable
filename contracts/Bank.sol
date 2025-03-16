@@ -3,14 +3,14 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "./Rates.sol";
 
-contract Bank is Ownable, RateCaculator {
+contract Bank is Ownable {
     
     address public immutable tokenA;
     address public immutable tokenB;
     address public immutable tokenC;
-    
+    address private immutable ownner; 
+    uint256 private immutable startTime;
 
     struct Loan {
         address borrower;
@@ -46,16 +46,22 @@ contract Bank is Ownable, RateCaculator {
     );
     event Repaid(address indexed user, uint256 loanIndex);
 
+    function getCurrentTimeView() internal view returns (uint256) {
+        return block.timestamp;
+    }
+
     constructor(address _tokenA, address _tokenB, address _tokenC) Ownable(msg.sender) {
         tokenA = _tokenA;
         tokenB = _tokenB;
         tokenC = _tokenC;
+        ownner = msg.sender;
+        startTime = getCurrentTimeView();
     }
 
     /// @notice 存入 ETH 或 Token
     function deposit(address token, uint256 amount) external payable {
         if (token == address(0)) {
-            eth_deposits[msg.sender].amount += msg.value / 1 ether;
+            eth_deposits[msg.sender].amount += msg.value;
             eth_deposits[msg.sender].time = getCurrentTimeView();
             emit ETHSaved(msg.sender, msg.value);
         } else {
@@ -68,9 +74,9 @@ contract Bank is Ownable, RateCaculator {
 
     /// @notice 取出 ETH 或 Token
     function withdraw(address token, uint256 amount) external {
-        require(deposits[token][msg.sender].amount >= amount, "Insufficient balance");
+        require(deposits[token][msg.sender].amount / 1 ether >= amount, "Insufficient balance");
 
-        deposits[token][msg.sender].amount -= amount;
+        deposits[token][msg.sender].amount -= amount * 1 ether;
         deposits[token][msg.sender].time = getCurrentTimeView();
         if (token == address(0)) {
             withdrawETH(amount);
@@ -82,9 +88,9 @@ contract Bank is Ownable, RateCaculator {
 
     function withdrawETH(uint256 _amount) internal {
         require(_amount > 0, "Amount must be greater than 0"); 
-        require(eth_deposits[msg.sender].amount >= _amount, "Insufficient balance"); 
+        require(eth_deposits[msg.sender].amount / 1 ether >= _amount, "Insufficient balance"); 
 
-        eth_deposits[msg.sender].amount -= _amount;
+        eth_deposits[msg.sender].amount -= _amount * 1 ether;
         eth_deposits[msg.sender].time = getCurrentTimeView();
 
         (bool success, ) = payable(msg.sender).call{value: _amount * 1 ether}("");
@@ -93,12 +99,23 @@ contract Bank is Ownable, RateCaculator {
         emit ETHWithdrawn(msg.sender, _amount);
     }
 
+    function transferETH(address payable _to, uint256 _amount) external payable {
+        require(_to != address(0), "Invalid address"); 
+        require(_amount > 0, "Amount must be greater than 0"); 
+        require(balances[msg.sender] >= _amount * 1 ether, "Insufficient balance");
+
+        eth_deposits[msg.sender] -= _amount * 1 ether;
+        eth_deposits[_to] += _amount * 1 ether;
+
+        emit ETHTransferred(msg.sender, _to, _amount);
+    }
+
     /// @notice 查询存款余额
     function getDeposit(address token) external view returns (uint256) {
         if (token == address(0)) {
-            return eth_deposits[msg.sender].amount;
+            return eth_deposits[msg.sender].amount / 1 ether;
         }
-        return deposits[token][msg.sender].amount;
+        return deposits[token][msg.sender].amount / 1 ether;
     }
 
     /// @notice 允许合约接收 ETH
