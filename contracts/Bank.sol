@@ -102,10 +102,10 @@ contract Bank is Ownable {
     function transferETH(address payable _to, uint256 _amount) external payable {
         require(_to != address(0), "Invalid address"); 
         require(_amount > 0, "Amount must be greater than 0"); 
-        require(balances[msg.sender] >= _amount * 1 ether, "Insufficient balance");
+        require(eth_deposits[msg.sender].amount >= _amount * 1 ether, "Insufficient balance");
 
-        eth_deposits[msg.sender] -= _amount * 1 ether;
-        eth_deposits[_to] += _amount * 1 ether;
+        eth_deposits[msg.sender].amount -= _amount * 1 ether;
+        eth_deposits[_to].amount += _amount * 1 ether;
 
         emit ETHTransferred(msg.sender, _to, _amount);
     }

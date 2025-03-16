@@ -14,17 +14,16 @@ contract Loanable is Bank {
         require(loanToken == address(0) || loanToken == tokenA || loanToken == tokenB || loanToken == tokenC, "Invalid loan token");
         require(collateralToken == address(0) || collateralToken == tokenA || collateralToken == tokenB || collateralToken == tokenC, "Invalid collateral token");
         require(loanToken != collateralToken, "Cannot borrow the same token as collateral");
-        require(deposits[collateralToken][msg.sender] >= collateralAmount, "Insufficient collateral");
 
         // 抵押
         if (loanToken == address(0)) {
-            require(eth_deposits[msg.sender] >= collateralAmount * 1 ether, "Insufficient collateral");
-            eth_deposits[msg.sender] -= collateralAmount * 1 ether;
-            eth_deposits[this] += collateralAmount * 1 ether;
+            require(eth_deposits[msg.sender].amount >= collateralAmount * 1 ether, "Insufficient collateral");
+            eth_deposits[msg.sender].amount -= collateralAmount * 1 ether;
+            eth_deposits[address(this)].amount += collateralAmount * 1 ether;
         } else {
-            require(deposits[collateralToken][msg.sender] >= collateralAmount * 1 ether, "Insufficient collateral");
-            deposits[collateralToken][msg.sender] -= collateralAmount * 1 ether;
-            deposits[collateralToken][this] += collateralAmount * 1 ether;
+            require(deposits[collateralToken][msg.sender].amount >= collateralAmount * 1 ether, "Insufficient collateral");
+            deposits[collateralToken][msg.sender].amount -= collateralAmount * 1 ether;
+            deposits[collateralToken][address(this)].amount += collateralAmount * 1 ether;
         }
 
         // 记录贷款
@@ -39,11 +38,11 @@ contract Loanable is Bank {
 
         // 发送贷款代币
         if (loanToken == address(0)) {
-            eth_deposits[this] -= loanAmount * 1 ether; // 以 ETH 储蓄为担保
-            eth_deposits[_to] += loanAmount * 1 ether;
+            eth_deposits[address(this)].amount -= loanAmount * 1 ether; // 以 ETH 储蓄为担保
+            eth_deposits[msg.sender].amount += loanAmount * 1 ether;
         } else {
-            deposits[loanToken][this] -= loanAmount * 1 ether;
-            deposits[loanToken][msg.sender] += loanAmount * 1 ether;
+            deposits[loanToken][address(this)].amount -= loanAmount * 1 ether;
+            deposits[loanToken][msg.sender].amount += loanAmount * 1 ether;
         }
 
         emit Borrowed(msg.sender, loanToken, loanAmount, collateralToken, collateralAmount);
@@ -57,17 +56,18 @@ contract Loanable is Bank {
 
         // 归还借款
         if (loan.loanToken == address(0)) {
-            require(eth_deposits[msg.sender] >= loan.loanAmount, "ETH repayment mismatch");
-            eth_deposits[msg.sender] -= loan.loanAmount;
-            eth_deposits[this] += loanAmount;
+            require(eth_deposits[msg.sender].amount >= loan.loanAmount, "ETH repayment mismatch");
+            eth_deposits[msg.sender].amount -= loan.loanAmount;
+            eth_deposits[address(this)].amount += loan.loanAmount;
         } else {
-            require(deposits[loan.loanToken][msg.sender] >= loan.loanAmount, "Loan repayment mismatch");
-            deposits[loan.loanToken][msg.sender] -= loan.loanAmount;
-            deposits[loan.loanToken][this] += loan.loanAmount;
+            require(deposits[loan.loanToken][msg.sender].amount >= loan.loanAmount, "Loan repayment mismatch");
+            deposits[loan.loanToken][msg.sender].amount -= loan.loanAmount;
+            deposits[loan.loanToken][address(this)].amount += loan.loanAmount;
         }
 
         // 退还抵押品
-        deposits[msg.sender][loan.collateralToken] += loan.collateralAmount;
+        deposits[msg.sender][loan.collateralToken].amount += loan.collateralAmount;
+        deposits[address(this)][loan.collateralToken].amount -= loan.collateralAmount;
         loan.isActive = false;
 
         emit Repaid(msg.sender, loanIndex);
