@@ -7,12 +7,35 @@ import "./Bank.sol";
 
 contract Loanable is Bank {
 
-    constructor(address _tokenA, address _tokenB, address _tokenC) Bank(_tokenA, _tokenB, _tokenC) {}
+    struct Loan {
+        address borrower;
+        address loanToken;
+        uint256 loanAmount;
+        uint256 initLoanAmount;
+        address collateralToken;
+        uint256 collateralAmount;
+        uint256 startTime;
+        uint256 lastActivateTime;
+        bool isActive;
+    }
+    mapping(address => Loan[]) public loans; // 用户贷款信息 (用户地址 => 贷款数组)
+    address[] public loanUsers;
+
+    event Borrowed(
+        address indexed user,
+        address indexed loanToken,
+        uint256 loanAmount,
+        address indexed collateralToken,
+        uint256 collateralAmount
+    );
+    event Repaid(address indexed user, uint256 loanIndex);
+
+    constructor(address[] memory _tokens) Bank(_tokens) {}
 
     /// @notice 抵押 `collateralToken` 以借出 `loanToken`
     function borrow(address loanToken, uint256 loanAmount, address collateralToken, uint256 collateralAmount) external {
-        require(loanToken == address(0) || loanToken == tokenA || loanToken == tokenB || loanToken == tokenC, "Invalid loan token");
-        require(collateralToken == address(0) || collateralToken == tokenA || collateralToken == tokenB || collateralToken == tokenC, "Invalid collateral token");
+        require(loanToken == address(0) || isTokenInList[loanToken], "Invalid loan token");
+        require(collateralToken == address(0) || isTokenInList[collateralToken], "Invalid collateral token");
         require(loanToken != collateralToken, "Cannot borrow the same token as collateral");
 
         // 抵押
@@ -27,12 +50,18 @@ contract Loanable is Bank {
         }
 
         // 记录贷款
+        if (loans[msg.sender].length == 0) {
+            loanUsers.push(msg.sender);
+        }
         loans[msg.sender].push(Loan({
             borrower: msg.sender,
             loanToken: loanToken,
             loanAmount: loanAmount * 1 ether,
+            initLoanAmount: loanAmount * 1 ether,
             collateralToken: collateralToken,
             collateralAmount: collateralAmount * 1 ether,
+            startTime: getCurrentTimeView(),
+            lastActivateTime: getCurrentTimeView(),
             isActive: true
         }));
 
@@ -76,5 +105,27 @@ contract Loanable is Bank {
     /// @notice 查询所有贷款信息
     function getLoans() external view returns (Loan[] memory) {
         return loans[msg.sender];
+    }
+
+    /// @notice 更新某个用户的所有贷款，计算利息
+    function updateLoan() internal view {
+        for (uint256 i = 0; i < loanUsers.length; i++) {
+            address user = loanUsers[i];
+            require(loans[user].length > 0, "No loans for this user");
+            for (uint256 j = 0; j < loans[user].length; j++) {
+                // 利率计算逻辑
+                uint256 loanAmount = loans[user][j].loanAmount;
+                uint256 lastTime = loans[user][j].lastActivateTime;
+                uint256 nowTime = loans[user][j].lastActivateTime;
+                // 更新前提：需要有足够长的时间以产生利息
+                // loans[user][j].lastActivateTime = getCurrentTimeView();
+                uint256 interval = nowTime - lastTime;
+
+                uint interestRate = 5;  // 利率
+                uint timeGap = 60;  // 一分钟计算一次利息
+
+                loanAmount = loanAmount * (100 + interestRate) / 100;
+            }
+        }
     }
 }
