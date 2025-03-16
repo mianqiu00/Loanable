@@ -20,7 +20,7 @@ contract MyToken is ERC20, ERC20Permit, Ownable {
     function claim() external {
         require(!hasClaimed[msg.sender], "You have already claimed your Token.");
         hasClaimed[msg.sender] = true;
-        _mint(msg.sender, 10 * 10 ** decimals()); // 发送 10 个 Token
+        _mint(msg.sender, 1 * 10 ** decimals()); // 发送 10 个 Token
     }
 
     function addressThis() external view returns (address) {
