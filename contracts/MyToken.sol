@@ -23,10 +23,6 @@ contract MyToken is ERC20, ERC20Permit, Ownable {
         _mint(msg.sender, 10 * 10 ** decimals()); // 发送 10 个 Token
     }
 
-    function balanceOf() external view returns (uint256) {
-        return super.balanceOf(msg.sender) / (10 ** decimals());
-    }
-
     function addressThis() external view returns (address) {
         return address(this);
     }

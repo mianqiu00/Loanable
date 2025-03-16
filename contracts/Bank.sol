@@ -68,54 +68,55 @@ contract Bank is Ownable {
             require(token == tokenA || token == tokenB || token == tokenC, "Invalid token");
             require(IERC20(token).transferFrom(msg.sender, address(this), amount), "Transfer failed");
             deposits[token][msg.sender].amount += amount;
+            deposits[token][msg.sender].time += getCurrentTimeView();
+            emit Deposited(msg.sender, token, amount);
         }
-        emit Deposited(msg.sender, token, amount);
     }
 
     /// @notice 取出 ETH 或 Token
     function withdraw(address token, uint256 amount) external {
-        require(deposits[token][msg.sender].amount / 1 ether >= amount, "Insufficient balance");
-
-        deposits[token][msg.sender].amount -= amount * 1 ether;
-        deposits[token][msg.sender].time = getCurrentTimeView();
         if (token == address(0)) {
-            withdrawETH(amount);
+            require(amount > 0, "Amount must be greater than 0"); 
+            require(eth_deposits[msg.sender].amount / 1 ether >= amount, "Insufficient balance"); 
+            eth_deposits[msg.sender].amount -= amount * 1 ether;
+            eth_deposits[msg.sender].time = getCurrentTimeView();
+            (bool success, ) = payable(msg.sender).call{value: amount * 1 ether}("");
+            require(success, "ETH withdrawal failed");
+            emit ETHWithdrawn(msg.sender, amount);
         } else {
+            require(token == tokenA || token == tokenB || token == tokenC, "Invalid token");
+            require(deposits[token][msg.sender].amount / 1 ether >= amount, "Insufficient balance");
+            deposits[token][msg.sender].amount -= amount * 1 ether;
             require(IERC20(token).transfer(msg.sender, amount), "Transfer failed");
+            emit Withdrawn(msg.sender, token, amount);
         }
-        emit Withdrawn(msg.sender, token, amount);
     }
 
-    function withdrawETH(uint256 _amount) internal {
-        require(_amount > 0, "Amount must be greater than 0"); 
-        require(eth_deposits[msg.sender].amount / 1 ether >= _amount, "Insufficient balance"); 
-
-        eth_deposits[msg.sender].amount -= _amount * 1 ether;
-        eth_deposits[msg.sender].time = getCurrentTimeView();
-
-        (bool success, ) = payable(msg.sender).call{value: _amount * 1 ether}("");
-        require(success, "ETH withdrawal failed");
-
-        emit ETHWithdrawn(msg.sender, _amount);
+    /// @notice 转账 ETH 或 Token
+    function transfer(address token, address payable to, uint256 amount) external payable {
+        require(amount > 0, "Amount must be greater than 0"); 
+        if (token == address(0)) {
+            require(eth_deposits[msg.sender].amount >= amount * 1 ether, "Insufficient balance");
+            eth_deposits[msg.sender].amount -= amount * 1 ether;
+            eth_deposits[to].amount += amount * 1 ether;
+            emit ETHTransferred(msg.sender, to, amount);
+        } else {
+            require(token == tokenA || token == tokenB || token == tokenC, "Invalid token");
+            require(deposits[token][msg.sender].amount >= amount * 1 ether, "Insufficient balance");
+            deposits[token][msg.sender].amount -= amount * 1 ether;
+            deposits[token][to].amount += amount * 1 ether;
+            emit Deposited(msg.sender, token, amount);
+        }
     }
-
-    function transferETH(address payable _to, uint256 _amount) external payable {
-        require(_to != address(0), "Invalid address"); 
-        require(_amount > 0, "Amount must be greater than 0"); 
-        require(eth_deposits[msg.sender].amount >= _amount * 1 ether, "Insufficient balance");
-
-        eth_deposits[msg.sender].amount -= _amount * 1 ether;
-        eth_deposits[_to].amount += _amount * 1 ether;
-
-        emit ETHTransferred(msg.sender, _to, _amount);
-    }
-
+    
     /// @notice 查询存款余额
     function getDeposit(address token) external view returns (uint256) {
         if (token == address(0)) {
             return eth_deposits[msg.sender].amount / 1 ether;
+        } else {
+            require(token == tokenA || token == tokenB || token == tokenC, "Invalid token");
+            return deposits[token][msg.sender].amount / 1 ether;
         }
-        return deposits[token][msg.sender].amount / 1 ether;
     }
 
     /// @notice 允许合约接收 ETH
