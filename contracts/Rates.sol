@@ -4,9 +4,18 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "./Math.sol";
-import "./Time.sol";
 
-contract Rates is Ownable, FixedPointMath, Time{
+contract Rates is Ownable, Math, RandomWalk, Time{
+    /// 价格相关
+    struct priceContainer {
+        uint256 initPrice;
+        uint256 currentPrice;
+        uint256 initTime;
+        uint256 lastTime;
+        uint256 amount;
+    }
+    mapping(address => priceContainer) public tokenPrice;
+
     /// 储蓄相关
     address[] internal tokens;
     address internal immutable bankOwner; 
@@ -18,19 +27,10 @@ contract Rates is Ownable, FixedPointMath, Time{
     }
 
     mapping(address => mapping(address => Deposit)) internal deposits; // 用户存款 (代币地址 => (用户地址 => 存款))
-    mapping(address => Deposit) internal eth_deposits; // 用户 ETH 存款 (用户地址 => 存款)
     mapping(address => bool) internal isTokenInList; // 记录 token 存在
     mapping(address => uint8) internal decimals;
     mapping(address => address[]) internal depositUsers;
     mapping(address => mapping(address => bool)) internal isDepositUsers;
-    
-    
-    event ETHTransferred(address indexed from, address indexed to, uint256 amount);
-    event ETHSaved(address indexed user, uint256 amount);
-    event ETHWithdrawn(address indexed user, uint256 amount);
-
-    event Deposited(address indexed user, address indexed token, uint256 amount);
-    event Withdrawn(address indexed user, address indexed token, uint256 amount);
 
     /// 贷款相关
     struct Loan {
@@ -47,14 +47,7 @@ contract Rates is Ownable, FixedPointMath, Time{
     mapping(address => Loan[]) internal loans; // 用户贷款信息 (用户地址 => 贷款数组)
     address[] internal loanUsers;
 
-    event Borrowed(
-        address indexed user,
-        address indexed loanToken,
-        uint256 loanAmount,
-        address indexed collateralToken,
-        uint256 collateralAmount
-    );
-    event Repaid(address indexed user, uint256 loanIndex);
+    event appendCollateralSign(address user, uint index);
 
     constructor(address[] memory _tokens) Ownable(msg.sender) {
         require(_tokens.length > 0, "At least one token address required");
@@ -63,9 +56,56 @@ contract Rates is Ownable, FixedPointMath, Time{
             tokens.push(_tokens[i]);
             decimals[_tokens[i]] = IERC20Metadata(_tokens[i]).decimals();
             isTokenInList[_tokens[i]] = true; // 记录 token 存在
+
+            tokenPrice[_tokens[i]].initPrice = 1 ether;
+            tokenPrice[_tokens[i]].currentPrice = 1 ether;
+            tokenPrice[_tokens[i]].initTime = getCurrentTimeView();
+            tokenPrice[_tokens[i]].lastTime = tokenPrice[_tokens[i]].initTime;
+            tokenPrice[_tokens[i]].amount = 0;
         }
+
+        tokenPrice[address(0)].currentPrice = 1 ether;
+        tokenPrice[address(0)].amount = 0;
+
         bankOwner = msg.sender;
         startTime = getCurrentTimeView();
+    }
+
+    /// @notice 计算代币利率（手写次方根计算）
+    function getRate(address token) internal view returns (uint256) {
+        uint256 initPrice = tokenPrice[token].initPrice;
+        uint256 currentPrice = tokenPrice[token].currentPrice;
+        
+        if (currentPrice > initPrice) {
+            return 0;
+        }
+        
+        uint256 timeGap = tokenPrice[token].lastTime - tokenPrice[token].initTime;
+        uint256 times = timeGap / 60 + 1;
+        
+        // 计算 (currentPrice / initPrice)^(1/times) - 1
+        uint256 ratio = (currentPrice * 1e18) / initPrice; // Solidity 处理定点数
+        uint256 root = nthRoot(ratio, times, 1e10); // 计算 `times` 次方根
+        uint256 rate = root - 1e18; // 转换为 1e18 格式
+
+        return rate / 1e16; // 1e18 = 1, 0.01e18 = 1%
+    }
+
+
+    /// @notice 更新代币价格
+    function updatePrice() internal {
+        for (uint256 i = 0; i < tokens.length; i++) {
+            address token = tokens[i];
+            uint256 lastTime = tokenPrice[token].lastTime;
+            uint256 nowTime = getCurrentTimeView();
+            uint256 timeGap = nowTime - lastTime;
+            uint256 currentPrice = tokenPrice[token].currentPrice;
+            if (timeGap > 0) {
+                uint256 std = 2 * 1e15;
+                currentPrice = walk(currentPrice, timeGap, std);
+                tokenPrice[token].currentPrice = currentPrice;
+            }
+        }
     }
 
     /// @notice 更新贷款，计算利息
@@ -74,28 +114,42 @@ contract Rates is Ownable, FixedPointMath, Time{
             address user = loanUsers[i];
             require(loans[user].length > 0, "No loans for this user");
             for (uint256 j = 0; j < loans[user].length; j++) {
+                Loan memory loan_t = loans[user][j];
                 // 利率计算逻辑
-                uint256 loanAmount = loans[user][j].loanAmount;
-                uint256 lastTime = loans[user][j].lastActivateTime;
-                uint256 nowTime = loans[user][j].lastActivateTime;
+                uint256 loanAmount = loan_t.loanAmount;
+                uint256 lastTime = loan_t.lastActivateTime;
+                uint256 nowTime = loan_t.lastActivateTime;
                 // 更新前提：需要有足够长的时间以产生利息
-                // loans[user][j].lastActivateTime = getCurrentTimeView();
                 uint256 timeGap = nowTime - lastTime;
 
-                uint interestRate = 5;  // 利率
+                uint256 interestRate = 5 + getRate(loan_t.loanToken);  // 基础利率
                 uint interval = 60;  // 一分钟计算一次利息
                 uint times = timeGap / interval;
 
                 uint256 loanAmountCopy = loanAmount;
-                loanAmount = toFixed(loanAmount);
+                loanAmount = loanAmount * 1e10;
                 for (uint time = 0; time < times; time++) {
                     loanAmount = loanAmount * (100 + interestRate) / 100;
                 }
-                loanAmount = fromFixed(loanAmount);
+                loanAmount = loanAmount / 1e10;
                 if (loanAmount - loanAmountCopy > 0) {
-                    loans[user][j].lastActivateTime += interval * times;
-                    loans[user][j].loanAmount = loanAmount;
+                    loan_t.lastActivateTime += interval * times;
+                    loan_t.loanAmount = loanAmount;
                 }
+
+                if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].currentPrice) * 110 / 100)) {
+                    emit appendCollateralSign(user, j);
+                } else if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].currentPrice) * 105 / 100)) {
+                    loan_t.isActive = false;
+                    if (deposits[loan_t.loanToken][msg.sender].amount > loan_t.loanAmount) {
+                        deposits[loan_t.loanToken][msg.sender].amount -= loan_t.loanAmount;
+                        deposits[loan_t.loanToken][address(this)].amount += loan_t.loanAmount;
+                    } else {
+                        deposits[loan_t.loanToken][msg.sender].amount -= loan_t.loanAmount;
+                        deposits[loan_t.loanToken][address(this)].amount += deposits[loan_t.loanToken][msg.sender].amount;
+                    }
+                }
+
             }
         }
     }
@@ -123,12 +177,22 @@ contract Rates is Ownable, FixedPointMath, Time{
                     uint256 proportion = deposits[token][user].amount * precision / tokenAmount * 7 / 10;
                     uint256 gain = surplus * proportion / precision;
                     deposits[token][user].amount += gain;
+                    deposits[token][user].time = getCurrentTimeView();
                     deposits[token][address(this)].amount -= gain;
+                    deposits[token][address(this)].time = getCurrentTimeView();
                 }
                 uint256 ownerGain = surplus * 3 / 10;
                 deposits[token][bankOwner].amount += ownerGain;
+                deposits[token][bankOwner].time = getCurrentTimeView();
                 deposits[token][address(this)].amount -= ownerGain;
+                deposits[token][address(this)].amount = getCurrentTimeView();
             }
         }
+    }
+
+    function updateBank() internal {
+        updatePrice();
+        updateLoan();
+        updateDeposits();
     }
 }

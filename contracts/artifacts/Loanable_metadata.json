@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.26+commit.8a97fa7a"
+		"version": "0.8.20+commit.a1b79de6"
 	},
 	"language": "Solidity",
 	"output": {
@@ -44,131 +44,6 @@
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "loanToken",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "loanAmount",
-						"type": "uint256"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "collateralToken",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "collateralAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "Borrowed",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "Deposited",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "ETHSaved",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "from",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "to",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "ETHTransferred",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "ETHWithdrawn",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
 						"name": "previousOwner",
 						"type": "address"
 					},
@@ -186,7 +61,7 @@
 				"anonymous": false,
 				"inputs": [
 					{
-						"indexed": true,
+						"indexed": false,
 						"internalType": "address",
 						"name": "user",
 						"type": "address"
@@ -194,61 +69,12 @@
 					{
 						"indexed": false,
 						"internalType": "uint256",
-						"name": "loanIndex",
+						"name": "index",
 						"type": "uint256"
 					}
 				],
-				"name": "Repaid",
+				"name": "appendCollateralSign",
 				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "token",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"name": "Withdrawn",
-				"type": "event"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "a",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "b",
-						"type": "uint256"
-					}
-				],
-				"name": "addFixed",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "pure",
-				"type": "function"
 			},
 			{
 				"inputs": [
@@ -261,6 +87,24 @@
 				"name": "addToken",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "loanIndex",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "appendCollateral",
+				"outputs": [],
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -279,16 +123,29 @@
 						"internalType": "address",
 						"name": "collateralToken",
 						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "collateralAmount",
-						"type": "uint256"
 					}
 				],
 				"name": "borrow",
 				"outputs": [],
 				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					}
+				],
+				"name": "buy",
+				"outputs": [],
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -312,25 +169,6 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
-						"name": "scaledValue",
-						"type": "uint256"
-					}
-				],
-				"name": "fromFixed",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "pure",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
 						"internalType": "address",
 						"name": "token",
 						"type": "address"
@@ -344,7 +182,7 @@
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -404,31 +242,7 @@
 						"type": "tuple[]"
 					}
 				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "a",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "b",
-						"type": "uint256"
-					}
-				],
-				"name": "mulFixed",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "pure",
+				"stateMutability": "nonpayable",
 				"type": "function"
 			},
 			{
@@ -467,20 +281,58 @@
 			{
 				"inputs": [
 					{
+						"internalType": "address",
+						"name": "token",
+						"type": "address"
+					},
+					{
 						"internalType": "uint256",
-						"name": "value",
+						"name": "amount",
 						"type": "uint256"
 					}
 				],
-				"name": "toFixed",
+				"name": "sell",
+				"outputs": [],
+				"stateMutability": "payable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "",
+						"type": "address"
+					}
+				],
+				"name": "tokenPrice",
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "",
+						"name": "initPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "currentPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "initTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "lastTime",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "pure",
+				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -534,7 +386,7 @@
 				],
 				"name": "withdraw",
 				"outputs": [],
-				"stateMutability": "nonpayable",
+				"stateMutability": "payable",
 				"type": "function"
 			},
 			{
@@ -575,8 +427,11 @@
 				"addToken(address[])": {
 					"notice": "添加 Token 类型"
 				},
-				"borrow(address,uint256,address,uint256)": {
+				"borrow(address,uint256,address)": {
 					"notice": "抵押 `collateralToken` 以借出 `loanToken`"
+				},
+				"buy(address,uint256)": {
+					"notice": "购买和售出代币"
 				},
 				"deposit(address,uint256)": {
 					"notice": "存入 ETH 或 Token"
@@ -604,7 +459,7 @@
 		"compilationTarget": {
 			"contracts/Loanable.sol": "Loanable"
 		},
-		"evmVersion": "cancun",
+		"evmVersion": "shanghai",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -649,43 +504,35 @@
 			]
 		},
 		"contracts/Bank.sol": {
-			"keccak256": "0x3a9169c2cce6b9f0e58921f8616542305b15926841a6db044a0c7c90be7acca7",
+			"keccak256": "0xdcc60a5c3c73656366127f7bb17e1a7066b5bddf321eec1d9d25765bd88efb4e",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://aac8e66f10f93a5d57e679679b93dd8860581cd6c87de5ac93f3eb8c959f0b44",
-				"dweb:/ipfs/Qmbh6YEcE2SbyHPsa7w3KGeoFXn88PgymVcrAtpCpmgZwz"
+				"bzz-raw://29ebbd4800eacb28930e6ba2cb32e8b7545957b26b58d171bb10d418a391c795",
+				"dweb:/ipfs/QmbgBiwUP1kKQvAeJ73mFi146kXMycbgzsNGxVb5gNyMRZ"
 			]
 		},
 		"contracts/Loanable.sol": {
-			"keccak256": "0x7777aea13eff719a3a7c78715831315a6397472144e0c693527e0d62048a7ebc",
+			"keccak256": "0x93dc0985d1ad3281b9e92e44a6c98e22e371a8f12b480cc03961a64c4f5fe86b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://94451a42add67eb2a2b2628e5d39f77e7da154306dffc596389e50d9364e6424",
-				"dweb:/ipfs/QmP4QfxgZdpGD5vdnGFvEhtUqVZ892Xo3FMe97tFsVrFmt"
+				"bzz-raw://b6533a3728a0c48d02e3ac6125f2a0a83650b1b2be5e8c68e9f49d53f16e097b",
+				"dweb:/ipfs/QmYavsjvNWBFwjJo5BeuKvcymgzyVMcvx6pPAngetAXK9G"
 			]
 		},
 		"contracts/Math.sol": {
-			"keccak256": "0x1ce481de7f107751e6882086eb8591b060ac4caabcd694cdf347b9f4331b0c76",
+			"keccak256": "0x102e665aa526d0daaf6a89bcb4d4a3d3b4a1b8e9437bdedcb3ab57e9b4d09480",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://1393c0921e8e81930ecf8de4554c43721844529ba17c5496aca308effb066b52",
-				"dweb:/ipfs/QmcSHXp3XknyQ1SU2JbEpCQRS6WBQderBgcozmre5xEBKn"
+				"bzz-raw://5c7a56df081480b2962c08a0ee74166f91e331d66457508802ac70b06b9b8692",
+				"dweb:/ipfs/QmVFxr1dRMHLVJ3m1vDca6tTjWyNAhdALmim27asQ1X6kR"
 			]
 		},
 		"contracts/Rates.sol": {
-			"keccak256": "0x16d8c225822e7842a2b2c232c43249279cac515b05fe0523cbd8e394bd820e9a",
+			"keccak256": "0xed25972bed029ade1a27a08c20c5153c3c5d79b39e7f625562f32fda986f0775",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://34f0b69b7254801f4b47097b8571409b8fcd778b7f152d491b9578fb7cd4abd7",
-				"dweb:/ipfs/QmeKL2pHEYF9REVjgasFD8x7ABt4yF6fUci8vdqZ31afnc"
-			]
-		},
-		"contracts/Time.sol": {
-			"keccak256": "0x609b1096c8bb01cc8d4c58089cc85c5fe16ee22a9b69d62d09b0ae69f47a8775",
-			"license": "MIT",
-			"urls": [
-				"bzz-raw://5e921a689906993c60e0dddda8875c68c039bfbbc874fe65e1a4fc17f5fc63d0",
-				"dweb:/ipfs/Qmdh6snuRFyT12qVTRbGqVWauhzQz19akcLySFcY94nU5K"
+				"bzz-raw://88061d86d4c1b18259d654426207c10f2391fb225ed671cde9e598fdad6cdc61",
+				"dweb:/ipfs/QmU9z4znFAAF1GEXQpmhXHqFRGX9avxyHgsnPHxBJQGBLR"
 			]
 		}
 	},
