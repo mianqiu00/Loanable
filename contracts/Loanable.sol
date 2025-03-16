@@ -1,35 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 import "./Bank.sol";
 
 contract Loanable is Bank {
-
-    struct Loan {
-        address borrower;
-        address loanToken;
-        uint256 loanAmount;
-        uint256 initLoanAmount;
-        address collateralToken;
-        uint256 collateralAmount;
-        uint256 startTime;
-        uint256 lastActivateTime;
-        bool isActive;
-    }
-    mapping(address => Loan[]) public loans; // 用户贷款信息 (用户地址 => 贷款数组)
-    address[] public loanUsers;
-
-    event Borrowed(
-        address indexed user,
-        address indexed loanToken,
-        uint256 loanAmount,
-        address indexed collateralToken,
-        uint256 collateralAmount
-    );
-    event Repaid(address indexed user, uint256 loanIndex);
-
     constructor(address[] memory _tokens) Bank(_tokens) {}
 
     /// @notice 抵押 `collateralToken` 以借出 `loanToken`
@@ -40,13 +14,13 @@ contract Loanable is Bank {
 
         // 抵押
         if (loanToken == address(0)) {
-            require(eth_deposits[msg.sender].amount >= collateralAmount * 1 ether, "Insufficient collateral");
-            eth_deposits[msg.sender].amount -= collateralAmount * 1 ether;
-            eth_deposits[address(this)].amount += collateralAmount * 1 ether;
+            require(eth_deposits[msg.sender].amount >= collateralAmount, "Insufficient collateral");
+            eth_deposits[msg.sender].amount -= collateralAmount;
+            eth_deposits[address(this)].amount += collateralAmount;
         } else {
-            require(deposits[collateralToken][msg.sender].amount >= collateralAmount * 1 ether, "Insufficient collateral");
-            deposits[collateralToken][msg.sender].amount -= collateralAmount * 1 ether;
-            deposits[collateralToken][address(this)].amount += collateralAmount * 1 ether;
+            require(deposits[collateralToken][msg.sender].amount >= collateralAmount, "Insufficient collateral");
+            deposits[collateralToken][msg.sender].amount -= collateralAmount;
+            deposits[collateralToken][address(this)].amount += collateralAmount;
         }
 
         // 记录贷款
@@ -56,10 +30,10 @@ contract Loanable is Bank {
         loans[msg.sender].push(Loan({
             borrower: msg.sender,
             loanToken: loanToken,
-            loanAmount: loanAmount * 1 ether,
-            initLoanAmount: loanAmount * 1 ether,
+            loanAmount: loanAmount,
+            initLoanAmount: loanAmount,
             collateralToken: collateralToken,
-            collateralAmount: collateralAmount * 1 ether,
+            collateralAmount: collateralAmount,
             startTime: getCurrentTimeView(),
             lastActivateTime: getCurrentTimeView(),
             isActive: true
@@ -67,11 +41,11 @@ contract Loanable is Bank {
 
         // 发送贷款代币
         if (loanToken == address(0)) {
-            eth_deposits[address(this)].amount -= loanAmount * 1 ether; // 以 ETH 储蓄为担保
-            eth_deposits[msg.sender].amount += loanAmount * 1 ether;
+            eth_deposits[address(this)].amount -= loanAmount; // 以 ETH 储蓄为担保
+            eth_deposits[msg.sender].amount += loanAmount;
         } else {
-            deposits[loanToken][address(this)].amount -= loanAmount * 1 ether;
-            deposits[loanToken][msg.sender].amount += loanAmount * 1 ether;
+            deposits[loanToken][address(this)].amount -= loanAmount;
+            deposits[loanToken][msg.sender].amount += loanAmount;
         }
 
         emit Borrowed(msg.sender, loanToken, loanAmount, collateralToken, collateralAmount);
@@ -107,25 +81,4 @@ contract Loanable is Bank {
         return loans[msg.sender];
     }
 
-    /// @notice 更新某个用户的所有贷款，计算利息
-    function updateLoan() internal view {
-        for (uint256 i = 0; i < loanUsers.length; i++) {
-            address user = loanUsers[i];
-            require(loans[user].length > 0, "No loans for this user");
-            for (uint256 j = 0; j < loans[user].length; j++) {
-                // 利率计算逻辑
-                uint256 loanAmount = loans[user][j].loanAmount;
-                uint256 lastTime = loans[user][j].lastActivateTime;
-                uint256 nowTime = loans[user][j].lastActivateTime;
-                // 更新前提：需要有足够长的时间以产生利息
-                // loans[user][j].lastActivateTime = getCurrentTimeView();
-                uint256 interval = nowTime - lastTime;
-
-                uint interestRate = 5;  // 利率
-                uint timeGap = 60;  // 一分钟计算一次利息
-
-                loanAmount = loanAmount * (100 + interestRate) / 100;
-            }
-        }
-    }
 }

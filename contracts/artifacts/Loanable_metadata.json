@@ -229,6 +229,43 @@
 			{
 				"inputs": [
 					{
+						"internalType": "uint256",
+						"name": "a",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "b",
+						"type": "uint256"
+					}
+				],
+				"name": "addFixed",
+				"outputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"stateMutability": "pure",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address[]",
+						"name": "_tokens",
+						"type": "address[]"
+					}
+				],
+				"name": "addToken",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
 						"internalType": "address",
 						"name": "loanToken",
 						"type": "address"
@@ -258,25 +295,6 @@
 				"inputs": [
 					{
 						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "decimals",
-				"outputs": [
-					{
-						"internalType": "uint8",
-						"name": "",
-						"type": "uint8"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
 						"name": "token",
 						"type": "address"
 					},
@@ -294,54 +312,20 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
+						"internalType": "uint256",
+						"name": "scaledValue",
+						"type": "uint256"
 					}
 				],
-				"name": "deposits",
+				"name": "fromFixed",
 				"outputs": [
 					{
 						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
 						"name": "",
-						"type": "address"
-					}
-				],
-				"name": "eth_deposits",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "time",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
 						"type": "uint256"
 					}
 				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -385,6 +369,11 @@
 								"type": "uint256"
 							},
 							{
+								"internalType": "uint256",
+								"name": "initLoanAmount",
+								"type": "uint256"
+							},
+							{
 								"internalType": "address",
 								"name": "collateralToken",
 								"type": "address"
@@ -395,12 +384,22 @@
 								"type": "uint256"
 							},
 							{
+								"internalType": "uint256",
+								"name": "startTime",
+								"type": "uint256"
+							},
+							{
+								"internalType": "uint256",
+								"name": "lastActivateTime",
+								"type": "uint256"
+							},
+							{
 								"internalType": "bool",
 								"name": "isActive",
 								"type": "bool"
 							}
 						],
-						"internalType": "struct Loanable.Loan[]",
+						"internalType": "struct Rates.Loan[]",
 						"name": "",
 						"type": "tuple[]"
 					}
@@ -411,69 +410,25 @@
 			{
 				"inputs": [
 					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
+						"internalType": "uint256",
+						"name": "a",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "b",
+						"type": "uint256"
 					}
 				],
-				"name": "isTokenInList",
+				"name": "mulFixed",
 				"outputs": [
 					{
-						"internalType": "bool",
-						"name": "",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
 						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
 					}
 				],
-				"name": "loans",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "borrower",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "loanToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "loanAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "collateralToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "collateralAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "isActive",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -513,19 +468,19 @@
 				"inputs": [
 					{
 						"internalType": "uint256",
+						"name": "value",
+						"type": "uint256"
+					}
+				],
+				"name": "toFixed",
+				"outputs": [
+					{
+						"internalType": "uint256",
 						"name": "",
 						"type": "uint256"
 					}
 				],
-				"name": "tokens",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
+				"stateMutability": "pure",
 				"type": "function"
 			},
 			{
@@ -617,6 +572,9 @@
 		"userdoc": {
 			"kind": "user",
 			"methods": {
+				"addToken(address[])": {
+					"notice": "添加 Token 类型"
+				},
 				"borrow(address,uint256,address,uint256)": {
 					"notice": "抵押 `collateralToken` 以借出 `loanToken`"
 				},
@@ -691,19 +649,43 @@
 			]
 		},
 		"contracts/Bank.sol": {
-			"keccak256": "0x3450f07bb80c88f78234dce9fc274ff209195450869019ec9aced95258a47885",
+			"keccak256": "0x3a9169c2cce6b9f0e58921f8616542305b15926841a6db044a0c7c90be7acca7",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://8a087d9ce45903402a053a98ff45ae2b1f610f738b0694c2dd6311ea16e04ebd",
-				"dweb:/ipfs/QmfKavQaSYmygCtPKju85DL3RbjtgdwGrGfDsVMUHxgdmh"
+				"bzz-raw://aac8e66f10f93a5d57e679679b93dd8860581cd6c87de5ac93f3eb8c959f0b44",
+				"dweb:/ipfs/Qmbh6YEcE2SbyHPsa7w3KGeoFXn88PgymVcrAtpCpmgZwz"
 			]
 		},
 		"contracts/Loanable.sol": {
-			"keccak256": "0x1d47644591c10039165904c99c861bcdffa898cdd0b7ec3f5ad02e3f5ae4159a",
+			"keccak256": "0x7777aea13eff719a3a7c78715831315a6397472144e0c693527e0d62048a7ebc",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://fee85cd2fbfc53c02a113cc61c70ed82d0b0d77337b35b0384f16d24d32b23ff",
-				"dweb:/ipfs/QmbdkuGon89vbpkhMxuk5eG93dEYG5ERc9CUf5L9qZoH37"
+				"bzz-raw://94451a42add67eb2a2b2628e5d39f77e7da154306dffc596389e50d9364e6424",
+				"dweb:/ipfs/QmP4QfxgZdpGD5vdnGFvEhtUqVZ892Xo3FMe97tFsVrFmt"
+			]
+		},
+		"contracts/Math.sol": {
+			"keccak256": "0x1ce481de7f107751e6882086eb8591b060ac4caabcd694cdf347b9f4331b0c76",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://1393c0921e8e81930ecf8de4554c43721844529ba17c5496aca308effb066b52",
+				"dweb:/ipfs/QmcSHXp3XknyQ1SU2JbEpCQRS6WBQderBgcozmre5xEBKn"
+			]
+		},
+		"contracts/Rates.sol": {
+			"keccak256": "0x16d8c225822e7842a2b2c232c43249279cac515b05fe0523cbd8e394bd820e9a",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://34f0b69b7254801f4b47097b8571409b8fcd778b7f152d491b9578fb7cd4abd7",
+				"dweb:/ipfs/QmeKL2pHEYF9REVjgasFD8x7ABt4yF6fUci8vdqZ31afnc"
+			]
+		},
+		"contracts/Time.sol": {
+			"keccak256": "0x609b1096c8bb01cc8d4c58089cc85c5fe16ee22a9b69d62d09b0ae69f47a8775",
+			"license": "MIT",
+			"urls": [
+				"bzz-raw://5e921a689906993c60e0dddda8875c68c039bfbbc874fe65e1a4fc17f5fc63d0",
+				"dweb:/ipfs/Qmdh6snuRFyT12qVTRbGqVWauhzQz19akcLySFcY94nU5K"
 			]
 		}
 	},

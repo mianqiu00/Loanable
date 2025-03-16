@@ -50,43 +50,6 @@
 					{
 						"indexed": true,
 						"internalType": "address",
-						"name": "loanToken",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "loanAmount",
-						"type": "uint256"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "collateralToken",
-						"type": "address"
-					},
-					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "collateralAmount",
-						"type": "uint256"
-					}
-				],
-				"name": "Borrowed",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
-						"indexed": true,
-						"internalType": "address",
 						"name": "token",
 						"type": "address"
 					},
@@ -192,25 +155,6 @@
 						"type": "address"
 					},
 					{
-						"indexed": false,
-						"internalType": "uint256",
-						"name": "loanIndex",
-						"type": "uint256"
-					}
-				],
-				"name": "Repaid",
-				"type": "event"
-			},
-			{
-				"anonymous": false,
-				"inputs": [
-					{
-						"indexed": true,
-						"internalType": "address",
-						"name": "user",
-						"type": "address"
-					},
-					{
 						"indexed": true,
 						"internalType": "address",
 						"name": "token",
@@ -229,9 +173,9 @@
 			{
 				"inputs": [
 					{
-						"internalType": "uint256",
+						"internalType": "address",
 						"name": "",
-						"type": "uint256"
+						"type": "address"
 					}
 				],
 				"name": "decimals",
@@ -355,55 +299,6 @@
 				"type": "function"
 			},
 			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "loans",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "borrower",
-						"type": "address"
-					},
-					{
-						"internalType": "address",
-						"name": "loanToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "loanAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "collateralToken",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "collateralAmount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bool",
-						"name": "isActive",
-						"type": "bool"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
 				"inputs": [],
 				"name": "owner",
 				"outputs": [
@@ -421,25 +316,6 @@
 				"name": "renounceOwnership",
 				"outputs": [],
 				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "tokens",
-				"outputs": [
-					{
-						"internalType": "address",
-						"name": "",
-						"type": "address"
-					}
-				],
-				"stateMutability": "view",
 				"type": "function"
 			},
 			{
@@ -596,11 +472,11 @@
 			]
 		},
 		"contracts/Bank.sol": {
-			"keccak256": "0x2b7cdc82e4e6d7691e11438b514c25a443ea126be7f98046b8a4bcb80696a9af",
+			"keccak256": "0x819faab55a83ea3fb04f5621a6bfda9a2a1dc2baf1c40724b5be1154a2c73763",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://88f2c0e9d31d0035ce3bd5437dece58b4a446ed88a1046475b71e5d2b4bfbeaa",
-				"dweb:/ipfs/QmfFPqPcKBZdPNwyDDs7XLRnU31UwaSwhAp6CqqvXMLUgx"
+				"bzz-raw://033e26fe2e1a45f8b1a7f89e08833aeebcc9b8205c3a5b4e7bcffc1e9774c0ab",
+				"dweb:/ipfs/QmZfwBesia6RU3ZcdLrHE9CLVfEcj9cBVcKJZqTU2S2Rxv"
 			]
 		}
 	},

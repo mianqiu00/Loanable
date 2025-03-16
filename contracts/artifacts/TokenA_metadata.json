@@ -380,19 +380,6 @@
 			},
 			{
 				"inputs": [],
-				"name": "balanceOf",
-				"outputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
-			},
-			{
-				"inputs": [],
 				"name": "claim",
 				"outputs": [],
 				"stateMutability": "nonpayable",
@@ -1021,11 +1008,11 @@
 			]
 		},
 		"contracts/MyToken.sol": {
-			"keccak256": "0x31ab0305987619b28d1d8908c86769e2609ab485ea86cbd96826b8fc2f901155",
+			"keccak256": "0x6410106de4efd639fa3ba3b4b7511a8724716859c31880e74a465c2ff500fb2b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://6acee0784f2ba1d7f84937d9eb03d5765233e5a50f7f974c4ecd378af7440ecc",
-				"dweb:/ipfs/QmTpU9vngsLVZo9a6tVLGjx2nKpsfjqKgGLs5PVkmBh3HY"
+				"bzz-raw://6fc009cee8ce169ce18a704e0a8156a834733cc0deb3d85509e32a63da060616",
+				"dweb:/ipfs/QmUqTALFxTYGzmnmmv19mZQqJKEUxxzHu744vaMLsEJD24"
 			]
 		},
 		"contracts/TokenA.sol": {
