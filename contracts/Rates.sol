@@ -137,17 +137,11 @@ contract Rates is Ownable, Math, RandomWalk, Time{
                     loan_t.loanAmount = loanAmount;
                 }
 
+                // 清算逻辑
                 if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].currentPrice) * 110 / 100)) {
                     emit appendCollateralSign(user, j);
                 } else if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].currentPrice) * 105 / 100)) {
                     loan_t.isActive = false;
-                    if (deposits[loan_t.loanToken][msg.sender].amount > loan_t.loanAmount) {
-                        deposits[loan_t.loanToken][msg.sender].amount -= loan_t.loanAmount;
-                        deposits[loan_t.loanToken][address(this)].amount += loan_t.loanAmount;
-                    } else {
-                        deposits[loan_t.loanToken][msg.sender].amount -= loan_t.loanAmount;
-                        deposits[loan_t.loanToken][address(this)].amount += deposits[loan_t.loanToken][msg.sender].amount;
-                    }
                 }
 
             }
