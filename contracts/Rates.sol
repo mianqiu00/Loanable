@@ -69,6 +69,12 @@ contract Rates is Ownable, Math, RandomWalk, Time{
 
         bankOwner = msg.sender;
         startTime = getCurrentTimeView();
+
+        for (uint256 i = 0; i < windowLength; i++) {
+            for (uint256 j = 0; j < _tokens.length; j++) { 
+                tokenPriceWindow[_tokens[j]][i] = 1 ether;
+            }
+        }
     }
 
     /// @notice 计算代币利率（手写次方根计算）
@@ -102,7 +108,7 @@ contract Rates is Ownable, Math, RandomWalk, Time{
             uint256 currentPrice = tokenPrice[token].currentPrice;
             if (timeGap > 0) {
                 uint256 std = 2 * 1e15;
-                currentPrice = walk(currentPrice, timeGap, std);
+                currentPrice = walk(token, currentPrice, lastTime, timeGap, std);
                 tokenPrice[token].currentPrice = currentPrice;
             }
         }

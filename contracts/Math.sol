@@ -45,6 +45,9 @@ contract Time {
 }
 
 contract RandomWalk {
+    mapping(address => uint256[]) internal tokenPriceWindow;
+    uint256 internal windowLength = 10;
+
     function getRandomNumber(uint256 seed) internal view returns (int) {
         uint256 random = uint256(
             keccak256(
@@ -60,7 +63,7 @@ contract RandomWalk {
         return numbers[random % 5];  // 取模 5，得到 0 到 4 的索引
     }
 
-    function walk(uint256 initAmount, uint256 times, uint256 std) internal view returns (uint256) {
+    function walk(address token, uint256 initAmount, uint256 initTime, uint256 times, uint256 std) internal returns (uint256) {
         for (uint i = 0; i < times; i++) {
             uint256 tempStd = std; // 避免 std 被修改
             while (tempStd > 0) {
@@ -76,6 +79,7 @@ contract RandomWalk {
                     initAmount += uint256(randomStep) * tempStd;
                 }
                 tempStd /= 10;
+                tokenPriceWindow[token][(initTime + i) % windowLength] = initAmount;
             }
         }
         return initAmount;

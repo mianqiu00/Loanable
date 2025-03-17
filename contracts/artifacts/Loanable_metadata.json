@@ -1,6 +1,6 @@
 {
 	"compiler": {
-		"version": "0.8.20+commit.a1b79de6"
+		"version": "0.8.26+commit.8a97fa7a"
 	},
 	"language": "Solidity",
 	"output": {
@@ -459,7 +459,7 @@
 		"compilationTarget": {
 			"contracts/Loanable.sol": "Loanable"
 		},
-		"evmVersion": "shanghai",
+		"evmVersion": "cancun",
 		"libraries": {},
 		"metadata": {
 			"bytecodeHash": "ipfs"
@@ -520,19 +520,19 @@
 			]
 		},
 		"contracts/Math.sol": {
-			"keccak256": "0x102e665aa526d0daaf6a89bcb4d4a3d3b4a1b8e9437bdedcb3ab57e9b4d09480",
+			"keccak256": "0x3c8b267b69b7b81ce33fc1bd1d5d1ae7d484d5aa79524d3a9770157f31c96b30",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://5c7a56df081480b2962c08a0ee74166f91e331d66457508802ac70b06b9b8692",
-				"dweb:/ipfs/QmVFxr1dRMHLVJ3m1vDca6tTjWyNAhdALmim27asQ1X6kR"
+				"bzz-raw://bb732aac41469783a8fa11e063f77b95605b53a462853cd5e339150747863c99",
+				"dweb:/ipfs/QmNcxfJKH2oXd89NxX1jkT9tGJuGbm1kSjUDpq34oudfme"
 			]
 		},
 		"contracts/Rates.sol": {
-			"keccak256": "0xed25972bed029ade1a27a08c20c5153c3c5d79b39e7f625562f32fda986f0775",
+			"keccak256": "0x2729b006a1c7a9aaa4566785d0ab2db81def264e075e7bb788dcaeb287a8f05b",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://88061d86d4c1b18259d654426207c10f2391fb225ed671cde9e598fdad6cdc61",
-				"dweb:/ipfs/QmU9z4znFAAF1GEXQpmhXHqFRGX9avxyHgsnPHxBJQGBLR"
+				"bzz-raw://2b868dab8e9577a397cbb0eb5f1570fc37fdf8e7b993818ae885135dbd9f40be",
+				"dweb:/ipfs/Qmaz4sZgsjuxhPXhYJZQyrdqooxsNvyBBtzEZWWhpTUVKG"
 			]
 		}
 	},
