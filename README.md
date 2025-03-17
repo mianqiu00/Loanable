@@ -94,4 +94,4 @@ Contributions are welcome! Please open an issue or submit a pull request on the 
 
 ## Author
 
-This project was developed by [mianqiu00](https://github.com/mianqiu00).
+This project was developed by [Yitian Wang](https://github.com/mianqiu00).
