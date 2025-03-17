@@ -10,6 +10,7 @@ contract Rates is Ownable, Math, RandomWalk, Time{
     struct priceContainer {
         uint256 initPrice;
         uint256 currentPrice;
+        uint256 windowPrice;
         uint256 initTime;
         uint256 lastTime;
         uint256 amount;
@@ -110,6 +111,10 @@ contract Rates is Ownable, Math, RandomWalk, Time{
                 uint256 std = 2 * 1e15;
                 currentPrice = walk(token, currentPrice, lastTime, timeGap, std);
                 tokenPrice[token].currentPrice = currentPrice;
+                tokenPrice[token].windowPrice = 0;
+                for (uint j = 0; j < windowLength; j++) {
+                    tokenPrice[token].windowPrice += (tokenPriceWindow[token][j] / windowLength);
+                }
             }
         }
     }
@@ -144,9 +149,9 @@ contract Rates is Ownable, Math, RandomWalk, Time{
                 }
 
                 // 清算逻辑
-                if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].currentPrice) * 110 / 100)) {
+                if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].windowPrice) * 110 / 100)) {
                     emit appendCollateralSign(user, j);
-                } else if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].currentPrice) * 105 / 100)) {
+                } else if (((loan_t.loanAmount / tokenPrice[loan_t.loanToken].currentPrice) > (loan_t.collateralAmount / tokenPrice[loan_t.collateralToken].windowPrice) * 105 / 100)) {
                     loan_t.isActive = false;
                 }
 

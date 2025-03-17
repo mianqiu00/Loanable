@@ -318,6 +318,11 @@
 					},
 					{
 						"internalType": "uint256",
+						"name": "windowPrice",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
 						"name": "initTime",
 						"type": "uint256"
 					},
@@ -528,11 +533,11 @@
 			]
 		},
 		"contracts/Rates.sol": {
-			"keccak256": "0x2729b006a1c7a9aaa4566785d0ab2db81def264e075e7bb788dcaeb287a8f05b",
+			"keccak256": "0x7ced2c63f3c6549c121e605aea11f041420d05fdc4163f718c6be09a31ab0dfa",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://2b868dab8e9577a397cbb0eb5f1570fc37fdf8e7b993818ae885135dbd9f40be",
-				"dweb:/ipfs/Qmaz4sZgsjuxhPXhYJZQyrdqooxsNvyBBtzEZWWhpTUVKG"
+				"bzz-raw://8874d434876c7c76470d8fbca1ef41d4805680c353d3b797c0b99bd2e6b7191c",
+				"dweb:/ipfs/QmaedM6hQbPG4PAk8Xaht7bobFQCQDUbfu5Zk8WQiJuhuB"
 			]
 		}
 	},
