@@ -38,10 +38,12 @@ contract Bank is Rates {
         }
         if (token == address(0)) {
             deposits[token][msg.sender].amount += msg.value;
-            tokenPrice[token].amount += amount;
+            deposits[token][address(this)].amount += msg.value;
+            tokenPrice[token].amount +=  msg.value;
         } else {
             require(IERC20(token).transferFrom(msg.sender, address(this), amount), "Transfer failed");
             deposits[token][msg.sender].amount += amount;
+            deposits[token][address(this)].amount += amount;
             tokenPrice[token].amount += amount;
         }
     }

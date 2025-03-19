@@ -7,7 +7,7 @@ contract Loanable is Bank {
     constructor(address[] memory _tokens) Bank(_tokens) {}
 
     /// @notice 抵押 `collateralToken` 以借出 `loanToken`
-    function borrow(address loanToken, uint256 loanAmount, address collateralToken) external {
+    function borrow(address loanToken, uint256 loanAmount, address collateralToken) external payable {
         updateBank();
         uint256 collateralAmount = loanAmount * tokenPrice[loanToken].currentPrice / tokenPrice[collateralToken].currentPrice * 120 / 100;  // 超量抵押
         require(loanToken == address(0) || isTokenInList[loanToken], "Invalid loan token");
@@ -24,6 +24,7 @@ contract Loanable is Bank {
         if (loans[msg.sender].length == 0) {
             loanUsers.push(msg.sender);
         }
+        uint256 timeNow = getCurrentTimeView();
         loans[msg.sender].push(Loan({
             borrower: msg.sender,
             loanToken: loanToken,
@@ -31,8 +32,8 @@ contract Loanable is Bank {
             initLoanAmount: loanAmount,
             collateralToken: collateralToken,
             collateralAmount: collateralAmount,
-            startTime: getCurrentTimeView(),
-            lastActivateTime: getCurrentTimeView(),
+            startTime: timeNow,
+            lastActivateTime: timeNow,
             isActive: true
         }));
 
