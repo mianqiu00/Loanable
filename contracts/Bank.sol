@@ -32,7 +32,6 @@ contract Bank is Rates {
     function deposit(address token, uint256 amount) external payable {
         updateBank();
         require(isTokenInList[token] || token == address(0), "Invalid token");
-        require(IERC20(token).transferFrom(msg.sender, address(this), amount), "Transfer failed");
         if (!isDepositUsers[token][msg.sender]) {
             depositUsers[token].push(msg.sender);
             isDepositUsers[token][msg.sender] = true;
@@ -40,6 +39,7 @@ contract Bank is Rates {
         if (token == address(0)) {
             deposits[token][msg.sender].amount += msg.value;
         } else {
+            require(IERC20(token).transferFrom(msg.sender, address(this), amount), "Transfer failed");
             deposits[token][msg.sender].amount += amount;
             tokenPrice[token].amount += amount;
         }
