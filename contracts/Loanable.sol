@@ -55,8 +55,8 @@ contract Loanable is Bank {
         deposits[loan.loanToken][address(this)].amount += loan.loanAmount;
 
         // 退还抵押品
-        deposits[msg.sender][loan.collateralToken].amount += loan.collateralAmount;
-        deposits[address(this)][loan.collateralToken].amount -= loan.collateralAmount;
+        deposits[loan.collateralToken][msg.sender].amount += loan.collateralAmount;
+        deposits[loan.collateralToken][address(this)].amount -= loan.collateralAmount;
         loan.isActive = false;
     }
 
