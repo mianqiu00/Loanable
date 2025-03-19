@@ -51,9 +51,7 @@ contract Rates is Ownable, Math, RandomWalk, Time{
     event appendCollateralSign(address user, uint index);
 
     constructor(address[] memory _tokens) Ownable(msg.sender) {
-        require(_tokens.length > 0, "At least one token address required");
         for (uint256 i = 0; i < _tokens.length; i++) {
-            require(!isTokenInList[_tokens[i]], "Duplicate token");
             tokens.push(_tokens[i]);
             decimals[_tokens[i]] = IERC20Metadata(_tokens[i]).decimals();
             isTokenInList[_tokens[i]] = true; // 记录 token 存在
@@ -73,7 +71,7 @@ contract Rates is Ownable, Math, RandomWalk, Time{
 
         for (uint256 i = 0; i < windowLength; i++) {
             for (uint256 j = 0; j < _tokens.length; j++) { 
-                tokenPriceWindow[_tokens[j]][i] = 1 ether;
+                tokenPriceWindow[_tokens[j]].push(1 ether);
             }
         }
     }
