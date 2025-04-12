@@ -24,7 +24,7 @@ contract Loanable is Bank {
         if (loans[msg.sender].length == 0) {
             loanUsers.push(msg.sender);
         }
-        uint256 timeNow = getCurrentTimeView();
+        uint256 timeNow = block.timestamp;
         loans[msg.sender].push(Loan({
             borrower: msg.sender,
             loanToken: loanToken,

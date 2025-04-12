@@ -38,11 +38,6 @@ contract Math {
     }
 } 
 
-contract Time {
-    function getCurrentTimeView() internal view returns (uint256) {
-        return block.timestamp;
-    }
-}
 
 contract RandomWalk {
     mapping(address => uint256[]) internal tokenPriceWindow;

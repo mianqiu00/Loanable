@@ -17,7 +17,7 @@ contract Bank is Rates {
 
             tokenPrice[_tokens[i]].initPrice = 1 ether;
             tokenPrice[_tokens[i]].currentPrice = 1 ether;
-            tokenPrice[_tokens[i]].initTime = getCurrentTimeView();
+            tokenPrice[_tokens[i]].initTime = block.timestamp;
             tokenPrice[_tokens[i]].lastTime = tokenPrice[_tokens[i]].initTime;
             tokenPrice[_tokens[i]].amount = 0;
         }

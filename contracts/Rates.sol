@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "./Math.sol";
 
-contract Rates is Ownable, Math, RandomWalk, Time{
+contract Rates is Ownable, Math, RandomWalk{
     /// 价格相关
     struct priceContainer {
         uint256 initPrice;
@@ -58,7 +58,7 @@ contract Rates is Ownable, Math, RandomWalk, Time{
 
             tokenPrice[_tokens[i]].initPrice = 1 ether;
             tokenPrice[_tokens[i]].currentPrice = 1 ether;
-            tokenPrice[_tokens[i]].initTime = getCurrentTimeView();
+            tokenPrice[_tokens[i]].initTime = block.timestamp;
             tokenPrice[_tokens[i]].lastTime = tokenPrice[_tokens[i]].initTime;
             tokenPrice[_tokens[i]].amount = 0;
         }
@@ -67,7 +67,7 @@ contract Rates is Ownable, Math, RandomWalk, Time{
         tokenPrice[address(0)].amount = 0;
 
         bankOwner = msg.sender;
-        startTime = getCurrentTimeView();
+        startTime = block.timestamp;
 
         for (uint256 i = 0; i < windowLength; i++) {
             for (uint256 j = 0; j < _tokens.length; j++) { 
@@ -102,7 +102,7 @@ contract Rates is Ownable, Math, RandomWalk, Time{
         for (uint256 i = 0; i < tokens.length; i++) {
             address token = tokens[i];
             uint256 lastTime = tokenPrice[token].lastTime;
-            uint256 nowTime = getCurrentTimeView();
+            uint256 nowTime = block.timestamp;
             uint256 timeGap = nowTime - lastTime;
             uint256 currentPrice = tokenPrice[token].currentPrice;
             if (timeGap > 0) {
@@ -180,15 +180,15 @@ contract Rates is Ownable, Math, RandomWalk, Time{
                     uint256 proportion = deposits[token][user].amount * precision / tokenAmount * 7 / 10;
                     uint256 gain = surplus * proportion / precision;
                     deposits[token][user].amount += gain;
-                    deposits[token][user].time = getCurrentTimeView();
+                    deposits[token][user].time = block.timestamp;
                     deposits[token][address(this)].amount -= gain;
-                    deposits[token][address(this)].time = getCurrentTimeView();
+                    deposits[token][address(this)].time = block.timestamp;
                 }
                 uint256 ownerGain = surplus * 3 / 10;
                 deposits[token][bankOwner].amount += ownerGain;
-                deposits[token][bankOwner].time = getCurrentTimeView();
+                deposits[token][bankOwner].time = block.timestamp;
                 deposits[token][address(this)].amount -= ownerGain;
-                deposits[token][address(this)].amount = getCurrentTimeView();
+                deposits[token][address(this)].amount = block.timestamp;
             }
         }
     }
